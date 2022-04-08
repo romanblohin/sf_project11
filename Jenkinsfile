@@ -4,6 +4,7 @@ node {
 
         stage('Check code') {
             sh '''
+                git clone git@github.com:romanblohin/sf_project11.git .
                 result=`curl -I http://51.250.72.205:9889 2>/dev/null | head -n 1 | cut -d ' ' -f 2`
                 if [ $result != "200" ]; then exit 1; fi
 
