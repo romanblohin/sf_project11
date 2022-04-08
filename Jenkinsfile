@@ -1,10 +1,12 @@
 node {
+    dir('project11') {
+        git branch: 'main', url: 'https://github.com/romanblohin/sf_project11.git'
+    }
   try {
-     docker.image('nginx:latest').withRun('-v /var/lib/jenkins/workspace/sf_project11:/usr/share/nginx/html -p 9889:80')  {
+    docker.image('nginx:latest').withRun('-v /var/lib/jenkins/workspace/sf_project11/project11:/usr/share/nginx/html -p 9889:80')  {
 
         stage('Check code') {
             sh '''
-                git clone git@github.com:romanblohin/sf_project11.git .
                 result=`curl -I http://51.250.72.205:9889 2>/dev/null | head -n 1 | cut -d ' ' -f 2`
                 if [ $result != "200" ]; then exit 1; fi
 
@@ -12,15 +14,16 @@ node {
         }
         stage('Check MD5') {
             sh '''
-                curl -o index_nginx.html http://51.250.72.205:9889
-                a=`md5sum index.html | awk '{print $1}'`
-                b=`md5sum index_nginx.html | awk '{print $1}'`
-                if [ "$a" = "$b" ]; then exit 1; fi
+                curl -o project11/index_nginx.html http://51.250.72.205:9889
+                a=`md5sum project11/index.html | awk '{print $1}'`
+                b=`md5sum project11/index_nginx.html | awk '{print $1}'`
+                if [ "$a" != "$b" ]; then exit 1; fi
 
                 '''
         }
 
     }
+
   } catch (e) {
     currentBuild.result = "FAILED"
     notifyFailed()
